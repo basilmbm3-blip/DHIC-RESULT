@@ -1,0 +1,54 @@
+<script>
+  let resultsData = {};
+
+  // Calculate correct base path for fetch
+  const base = window.location.pathname.replace(/\/[^/]*$/, "");
+
+  fetch(base + "/results.json?v=1.0")
+    .then(response => {
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      return response.json();
+    })
+    .then(data => {
+      resultsData = data;
+      console.log("Results loaded:", resultsData);
+    })
+    .catch(err => {
+      console.error("Failed to load results.json:", err);
+      document.getElementById("output").innerText = "Error loading results data.";
+    });
+
+  function searchResult() {
+    const input = document.getElementById("reg").value.trim();
+    if (input === "") {
+      alert("Please enter Register Number");
+      return;
+    }
+
+    const result = resultsData[input];
+    if (!result) {
+      document.getElementById("output").innerHTML = `<p style="color:red;">No result found for Register No: ${input}</p>`;
+      return;
+    }
+
+    document.getElementById("output").innerHTML = `
+      <h3>Result</h3>
+      <p><strong>Name:</strong> ${result.name}</p>
+      <p><strong>Register Number:</strong> ${result.reg_no}</p>
+      <h4>Subject Marks</h4>
+      <p>HADEES: ${result.hadees}</p>
+      <p>FIQH: ${result.fiqh}</p>
+      <p>INSHA: ${result.insha}</p>
+      <p>QURAN & HIFZ: ${result.quran_hifz}</p>
+      <p>AZKAR: ${result.azkar}</p>
+      <h4>Total</h4>
+      <p><strong>${result.total}</strong></p>
+      <h4>Status</h4>
+      <p style="color:${result.status === 'PASS' ? 'green' : 'red'}; font-weight:bold;">
+        ${result.status}
+      </p>
+      <h4>Rank</h4>
+      <p><strong>${result.rank}</strong></p>
+    `;
+  }
+</script>
